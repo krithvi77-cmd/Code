@@ -1,0 +1,11 @@
+<migration>
+  <pipeline name="sample">
+    <extractor class="com.example.migration.examples.StaticExtractor">
+      <param key="count">3</param>
+    </extractor>
+    <transformers>
+      <transformer class="com.example.migration.examples.PassThroughTransformer" />
+    </transformers>
+    <loader class="com.example.migration.examples.ConsoleLoader" />
+  </pipeline>
+</migration>
