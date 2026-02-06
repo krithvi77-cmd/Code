@@ -17,8 +17,11 @@ public final class EnvVarResolver {
         StringBuffer buffer = new StringBuffer();
         while (matcher.find()) {
             String key = matcher.group(1).trim();
-            String env = System.getenv(key);
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(env == null ? "" : env));
+            String value = System.getProperty(key);
+            if (value == null) {
+                value = System.getenv(key);
+            }
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(value == null ? "" : value));
         }
         matcher.appendTail(buffer);
         return buffer.toString();
