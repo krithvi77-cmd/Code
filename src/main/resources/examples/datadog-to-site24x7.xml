@@ -1,0 +1,31 @@
+<migration>
+  <pipeline name="datadog-to-site24x7">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.datadoghq.com/api/v1/monitor</param>
+      <param key="method">GET</param>
+      <param key="headers.DD-API-KEY">${DATADOG_API_KEY}</param>
+      <param key="headers.DD-APPLICATION-KEY">${DATADOG_APP_KEY}</param>
+      <param key="recordsPointer">/monitors</param>
+    </extractor>
+
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.displayName">name</param>
+        <param key="mapping.type">type</param>
+        <param key="mapping.query">query</param>
+        <param key="mapping.tags">tags</param>
+      </transformer>
+    </transformers>
+
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.site24x7.com/api/monitors</param>
+      <param key="method">POST</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">header</param>
+      <param key="auth.apiKey.name">Authorization</param>
+      <param key="auth.apiKey.value">Zoho-oauthtoken ${SITE24X7_TOKEN}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"display_name":"${displayName}","type":"${type}","query":"${query}","tags":${tags}}</param>
+    </loader>
+  </pipeline>
+</migration>

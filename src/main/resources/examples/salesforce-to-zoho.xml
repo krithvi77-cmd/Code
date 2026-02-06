@@ -1,0 +1,30 @@
+<migration>
+  <pipeline name="salesforce-to-zoho">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://yourInstance.my.salesforce.com/services/data/v60.0/query</param>
+      <param key="method">GET</param>
+      <param key="auth.type">bearer</param>
+      <param key="auth.bearer.token">${SALESFORCE_TOKEN}</param>
+      <param key="query.q">SELECT Id, Name, Email FROM Contact</param>
+      <param key="recordsPointer">/records</param>
+    </extractor>
+
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.Last_Name">Name</param>
+        <param key="mapping.Email">Email</param>
+      </transformer>
+    </transformers>
+
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.zohoapis.com/crm/v2/Contacts</param>
+      <param key="method">POST</param>
+      <param key="auth.type">oauth2</param>
+      <param key="auth.oauth.tokenUrl">https://accounts.zoho.com/oauth/v2/token</param>
+      <param key="auth.oauth.clientId">${ZOHO_CLIENT_ID}</param>
+      <param key="auth.oauth.clientSecret">${ZOHO_CLIENT_SECRET}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"data":[{"Last_Name":"${Last_Name}","Email":"${Email}"}]}</param>
+    </loader>
+  </pipeline>
+</migration>

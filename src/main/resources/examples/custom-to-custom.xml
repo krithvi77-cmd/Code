@@ -1,0 +1,31 @@
+<migration>
+  <pipeline name="custom-to-custom">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.source-app.com/v1/items</param>
+      <param key="method">GET</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">query</param>
+      <param key="auth.apiKey.name">token</param>
+      <param key="auth.apiKey.value">${SOURCE_TOKEN}</param>
+      <param key="recordsPointer">/data</param>
+    </extractor>
+
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.item_id">id</param>
+        <param key="mapping.description">details.description</param>
+        <param key="mapping.status">literal:ACTIVE</param>
+      </transformer>
+    </transformers>
+
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://api.target-app.com/v2/items</param>
+      <param key="method">POST</param>
+      <param key="auth.type">basic</param>
+      <param key="auth.basic.username">${TARGET_USER}</param>
+      <param key="auth.basic.password">${TARGET_PASS}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"external_id":"${item_id}","description":"${description}","status":"${status}"}</param>
+    </loader>
+  </pipeline>
+</migration>
