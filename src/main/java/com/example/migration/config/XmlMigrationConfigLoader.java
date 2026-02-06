@@ -1,5 +1,6 @@
 package com.example.migration.config;
 
+import com.example.migration.util.EnvVarResolver;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -63,7 +64,7 @@ public class XmlMigrationConfigLoader {
             Element paramElement = (Element) paramNodes.item(i);
             String key = paramElement.getAttribute("key");
             String value = paramElement.getTextContent();
-            parameters.put(key, value);
+            parameters.put(key, EnvVarResolver.resolve(value));
         }
         return new ComponentConfig(className, parameters);
     }

@@ -1,5 +1,5 @@
 <migration>
-  <pipeline name="sample-http">
+  <pipeline name="custom-to-custom">
     <extractor class="com.example.migration.connectors.http.HttpExtractor">
       <param key="url">https://api.source-app.com/v1/items</param>
       <param key="method">GET</param>
@@ -9,6 +9,7 @@
       <param key="auth.apiKey.value">${SOURCE_TOKEN}</param>
       <param key="recordsPointer">/data</param>
     </extractor>
+
     <transformers>
       <transformer class="com.example.migration.core.MappingTransformer">
         <param key="mapping.item_id">id</param>
@@ -16,6 +17,7 @@
         <param key="mapping.status">literal:ACTIVE</param>
       </transformer>
     </transformers>
+
     <loader class="com.example.migration.connectors.http.HttpLoader">
       <param key="url">https://api.target-app.com/v2/items</param>
       <param key="method">POST</param>
