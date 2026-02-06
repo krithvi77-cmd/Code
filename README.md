@@ -135,6 +135,19 @@ mvn package
 java -jar target/migration-framework-0.1.0.jar path/to/migration.xml
 ```
 
+## Hardcoded Credentials (Local Testing Only)
+
+If you need to run quickly without setting environment variables, use
+`HardcodedMigrationRunner`, which sets credentials via system properties.
+**Do not use this in production.**
+
+```bash
+mvn -q -DskipTests package
+mvn -q -DskipTests dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp target/classes:$(cat cp.txt) com.example.migration.runner.HardcodedMigrationRunner \
+  src/main/resources/examples/datadog-site24x7-normalized.xml
+```
+
 ## Example Configs
 
 Sample configurations are available in `src/main/resources/examples`:
