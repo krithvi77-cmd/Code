@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    AstraMigrate Enterprise - Site24x7 Mapping Configuration
+    =========================================================
+    
+    This file defines how normalized monitor data maps to Site24x7 API fields.
+    Reference: https://www.site24x7.com/help/api/
+    
+    Version: 2.0.0
+-->
+<site24x7-mappings>
+    
+    <!-- ==================== REGIONAL SETTINGS ==================== -->
+    <settings>
+        <regions>
+            <region id="in" accounts-url="https://accounts.zoho.in" base-url="https://www.site24x7.in/api" />
+            <region id="us" accounts-url="https://accounts.zoho.com" base-url="https://www.site24x7.com/api" />
+            <region id="eu" accounts-url="https://accounts.zoho.eu" base-url="https://www.site24x7.eu/api" />
+            <region id="au" accounts-url="https://accounts.zoho.com.au" base-url="https://www.site24x7.com.au/api" />
+            <region id="jp" accounts-url="https://accounts.zoho.jp" base-url="https://www.site24x7.jp/api" />
+            <region id="cn" accounts-url="https://accounts.zoho.com.cn" base-url="https://www.site24x7.cn/api" />
+        </regions>
+        <base-url>https://www.site24x7.in/api</base-url>
+        <accounts-url>https://accounts.zoho.in</accounts-url>
+    </settings>
+    
+    <!-- ==================== MONITOR TYPE MAPPINGS ==================== -->
+    <monitors endpoint="/monitors">
+        
+        <!-- ========== REST API MONITOR ========== -->
+        <monitor-type name="REST_API">
+            <field target-field="display_name" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="type" type="single">
+                <vendor name="datadog">
+                    <source-key>force_type</source-key>
+                    <default-value>RESTAPI</default-value>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>force_type</source-key>
+                    <default-value>RESTAPI</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="website" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_url</source-key>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>monitor_url</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="timeout" type="single">
+                <vendor name="datadog">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="http_method" type="single">
+                <vendor name="datadog">
+                    <source-key>method</source-key>
+                    <default-value>G</default-value>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>method</source-key>
+                    <default-value>G</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="check_frequency" type="single">
+                <vendor name="datadog">
+                    <source-key>frequency_seconds</source-key>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>frequency_minutes</source-key>
+                </vendor>
+                <transform>seconds-to-minutes</transform>
+            </field>
+
+            <field target-field="location_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/location_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>World wide Locations</default-value>
+            </field>
+
+            <field target-field="threshold_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/threshold_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Threshold Profile</default-value>
+            </field>
+
+            <field target-field="notification_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/notification_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Notification Profile</default-value>
+            </field>
+
+            <field target-field="user_group_ids" type="list">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/user_groups</lookup-endpoint>
+                <match-on>display_name</match-on>
+                <id-field>user_group_id</id-field>
+                <default-value>Admin Group</default-value>
+            </field>
+        </monitor-type>
+
+        <!-- ========== URL/WEBSITE MONITOR ========== -->
+        <monitor-type name="URL">
+            <field target-field="display_name" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="type" type="single">
+                <vendor name="datadog">
+                    <source-key>force_type</source-key>
+                    <default-value>URL</default-value>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>force_type</source-key>
+                    <default-value>URL</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="website" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_url</source-key>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>monitor_url</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="timeout" type="single">
+                <vendor name="datadog">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="http_method" type="single">
+                <vendor name="datadog">
+                    <source-key>method</source-key>
+                    <default-value>G</default-value>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>method</source-key>
+                    <default-value>G</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="check_frequency" type="single">
+                <vendor name="datadog">
+                    <source-key>frequency_seconds</source-key>
+                </vendor>
+                <vendor name="newrelic">
+                    <source-key>frequency_minutes</source-key>
+                </vendor>
+                <transform>seconds-to-minutes</transform>
+            </field>
+
+            <field target-field="location_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/location_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>World wide Locations</default-value>
+            </field>
+
+            <field target-field="threshold_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/threshold_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Threshold Profile</default-value>
+            </field>
+
+            <field target-field="notification_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/notification_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Notification Profile</default-value>
+            </field>
+
+            <field target-field="user_group_ids" type="list">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/user_groups</lookup-endpoint>
+                <match-on>display_name</match-on>
+                <id-field>user_group_id</id-field>
+                <default-value>Admin Group</default-value>
+            </field>
+        </monitor-type>
+
+        <!-- ========== WEBSOCKET MONITOR ========== -->
+        <monitor-type name="WEBSOCKET">
+            <field target-field="display_name" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="type" type="single">
+                <vendor name="datadog">
+                    <source-key>force_type</source-key>
+                    <default-value>WEBSOCKET</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="website" type="single">
+                <vendor name="datadog">
+                    <source-key>websocket_url</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="timeout" type="single">
+                <vendor name="datadog">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="check_frequency" type="single">
+                <vendor name="datadog">
+                    <source-key>frequency_seconds</source-key>
+                </vendor>
+                <transform>seconds-to-minutes</transform>
+            </field>
+
+            <field target-field="location_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/location_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>World wide Locations</default-value>
+            </field>
+
+            <field target-field="threshold_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/threshold_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Threshold Profile</default-value>
+            </field>
+
+            <field target-field="notification_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/notification_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Notification Profile</default-value>
+            </field>
+
+            <field target-field="user_group_ids" type="list">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/user_groups</lookup-endpoint>
+                <match-on>display_name</match-on>
+                <id-field>user_group_id</id-field>
+                <default-value>Admin Group</default-value>
+            </field>
+        </monitor-type>
+
+        <!-- ========== SSL CERTIFICATE MONITOR ========== -->
+        <monitor-type name="SSL_CERT">
+            <field target-field="display_name" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="type" type="single">
+                <vendor name="datadog">
+                    <source-key>force_type</source-key>
+                    <default-value>SSL_CERT</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="website" type="single">
+                <vendor name="datadog">
+                    <source-key>host</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="port" type="single">
+                <vendor name="datadog">
+                    <source-key>port</source-key>
+                    <default-value>443</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="timeout" type="single">
+                <vendor name="datadog">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="check_frequency" type="single">
+                <vendor name="datadog">
+                    <source-key>frequency_seconds</source-key>
+                </vendor>
+                <transform>seconds-to-minutes</transform>
+            </field>
+
+            <field target-field="expire_days" type="single">
+                <vendor name="datadog">
+                    <source-key>expire_days</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="location_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/location_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>World wide Locations</default-value>
+            </field>
+
+            <field target-field="threshold_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/threshold_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Threshold Profile</default-value>
+            </field>
+
+            <field target-field="notification_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/notification_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Notification Profile</default-value>
+            </field>
+
+            <field target-field="user_group_ids" type="list">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/user_groups</lookup-endpoint>
+                <match-on>display_name</match-on>
+                <id-field>user_group_id</id-field>
+                <default-value>Admin Group</default-value>
+            </field>
+        </monitor-type>
+
+        <!-- ========== DNS MONITOR ========== -->
+        <monitor-type name="DNS">
+            <field target-field="display_name" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="type" type="single">
+                <vendor name="datadog">
+                    <source-key>force_type</source-key>
+                    <default-value>DNS</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="domain_name" type="single">
+                <vendor name="datadog">
+                    <source-key>hostname</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="dns_host" type="single">
+                <vendor name="datadog">
+                    <source-key>dns_server</source-key>
+                    <default-value>8.8.8.8</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="timeout" type="single">
+                <vendor name="datadog">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="check_frequency" type="single">
+                <vendor name="datadog">
+                    <source-key>frequency_seconds</source-key>
+                </vendor>
+                <transform>seconds-to-minutes</transform>
+            </field>
+
+            <field target-field="location_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/location_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>World wide Locations</default-value>
+            </field>
+
+            <field target-field="threshold_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/threshold_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Threshold Profile</default-value>
+            </field>
+
+            <field target-field="notification_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/notification_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Notification Profile</default-value>
+            </field>
+
+            <field target-field="user_group_ids" type="list">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/user_groups</lookup-endpoint>
+                <match-on>display_name</match-on>
+                <id-field>user_group_id</id-field>
+                <default-value>Admin Group</default-value>
+            </field>
+        </monitor-type>
+
+        <!-- ========== PORT/TCP MONITOR ========== -->
+        <monitor-type name="PORT">
+            <field target-field="display_name" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="type" type="single">
+                <vendor name="datadog">
+                    <source-key>force_type</source-key>
+                    <default-value>PORT</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="host_name" type="single">
+                <vendor name="datadog">
+                    <source-key>host</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="port" type="single">
+                <vendor name="datadog">
+                    <source-key>port</source-key>
+                    <default-value>80</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="timeout" type="single">
+                <vendor name="datadog">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="check_frequency" type="single">
+                <vendor name="datadog">
+                    <source-key>frequency_seconds</source-key>
+                </vendor>
+                <transform>seconds-to-minutes</transform>
+            </field>
+
+            <field target-field="location_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/location_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>World wide Locations</default-value>
+            </field>
+
+            <field target-field="threshold_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/threshold_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Threshold Profile</default-value>
+            </field>
+
+            <field target-field="notification_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/notification_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Notification Profile</default-value>
+            </field>
+
+            <field target-field="user_group_ids" type="list">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/user_groups</lookup-endpoint>
+                <match-on>display_name</match-on>
+                <id-field>user_group_id</id-field>
+                <default-value>Admin Group</default-value>
+            </field>
+        </monitor-type>
+
+        <!-- ========== PING/ICMP MONITOR ========== -->
+        <monitor-type name="PING">
+            <field target-field="display_name" type="single">
+                <vendor name="datadog">
+                    <source-key>monitor_name</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="type" type="single">
+                <vendor name="datadog">
+                    <source-key>force_type</source-key>
+                    <default-value>PING</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="host_name" type="single">
+                <vendor name="datadog">
+                    <source-key>host</source-key>
+                </vendor>
+            </field>
+
+            <field target-field="timeout" type="single">
+                <vendor name="datadog">
+                    <source-key>timeout</source-key>
+                    <default-value>30</default-value>
+                </vendor>
+            </field>
+
+            <field target-field="check_frequency" type="single">
+                <vendor name="datadog">
+                    <source-key>frequency_seconds</source-key>
+                </vendor>
+                <transform>seconds-to-minutes</transform>
+            </field>
+
+            <field target-field="location_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/location_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>World wide Locations</default-value>
+            </field>
+
+            <field target-field="threshold_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/threshold_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Threshold Profile</default-value>
+            </field>
+
+            <field target-field="notification_profile_id" type="single">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/notification_profiles</lookup-endpoint>
+                <match-on>profile_name</match-on>
+                <id-field>profile_id</id-field>
+                <default-value>Default Notification Profile</default-value>
+            </field>
+
+            <field target-field="user_group_ids" type="list">
+                <resolve-by>api</resolve-by>
+                <lookup-endpoint response-path="$.data">/user_groups</lookup-endpoint>
+                <match-on>display_name</match-on>
+                <id-field>user_group_id</id-field>
+                <default-value>Admin Group</default-value>
+            </field>
+        </monitor-type>
+        
+    </monitors>
+</site24x7-mappings>
+
