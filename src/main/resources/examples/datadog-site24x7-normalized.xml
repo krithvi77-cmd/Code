@@ -1,0 +1,213 @@
+<migration>
+  <pipeline name="datadog-rest-api">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.${DATADOG_DOMAIN}/api/v1/synthetics/tests</param>
+      <param key="method">GET</param>
+      <param key="headers.DD-API-KEY">${DATADOG_API_KEY}</param>
+      <param key="headers.DD-APPLICATION-KEY">${DATADOG_APP_KEY}</param>
+      <param key="recordsPointer">/tests</param>
+    </extractor>
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.display_name">name</param>
+        <param key="mapping.type">literal:RESTAPI</param>
+        <param key="mapping.website">config.request.url</param>
+        <param key="mapping.http_method">config.request.method</param>
+        <param key="mapping.check_frequency">options.tick_every</param>
+        <param key="mapping.request_headers">config.request.headers</param>
+        <param key="mapping.request_body">config.request.body</param>
+        <param key="mapping.status">status</param>
+        <param key="mapping.tags">tags</param>
+      </transformer>
+    </transformers>
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.site24x7.com/api/monitors</param>
+      <param key="method">POST</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">header</param>
+      <param key="auth.apiKey.name">Authorization</param>
+      <param key="auth.apiKey.value">Zoho-oauthtoken ${SITE24X7_TOKEN}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"display_name":"${display_name}","type":"${type}","website":"${website}","http_method":"${http_method}","check_frequency":${check_frequency},"request_headers":${request_headers},"request_body":"${request_body}","tags":${tags}}</param>
+    </loader>
+  </pipeline>
+
+  <pipeline name="datadog-url">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.${DATADOG_DOMAIN}/api/v1/synthetics/tests</param>
+      <param key="method">GET</param>
+      <param key="headers.DD-API-KEY">${DATADOG_API_KEY}</param>
+      <param key="headers.DD-APPLICATION-KEY">${DATADOG_APP_KEY}</param>
+      <param key="recordsPointer">/tests</param>
+    </extractor>
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.display_name">name</param>
+        <param key="mapping.type">literal:URL</param>
+        <param key="mapping.website">config.request.url</param>
+        <param key="mapping.check_frequency">options.tick_every</param>
+        <param key="mapping.status">status</param>
+        <param key="mapping.tags">tags</param>
+      </transformer>
+    </transformers>
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.site24x7.com/api/monitors</param>
+      <param key="method">POST</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">header</param>
+      <param key="auth.apiKey.name">Authorization</param>
+      <param key="auth.apiKey.value">Zoho-oauthtoken ${SITE24X7_TOKEN}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"display_name":"${display_name}","type":"${type}","website":"${website}","check_frequency":${check_frequency},"tags":${tags}}</param>
+    </loader>
+  </pipeline>
+
+  <pipeline name="datadog-websocket">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.${DATADOG_DOMAIN}/api/v1/synthetics/tests</param>
+      <param key="method">GET</param>
+      <param key="headers.DD-API-KEY">${DATADOG_API_KEY}</param>
+      <param key="headers.DD-APPLICATION-KEY">${DATADOG_APP_KEY}</param>
+      <param key="recordsPointer">/tests</param>
+    </extractor>
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.display_name">name</param>
+        <param key="mapping.type">literal:WEBSOCKET</param>
+        <param key="mapping.website">config.request.url</param>
+        <param key="mapping.send_message">config.request.message</param>
+        <param key="mapping.check_frequency">options.tick_every</param>
+        <param key="mapping.status">status</param>
+      </transformer>
+    </transformers>
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.site24x7.com/api/monitors</param>
+      <param key="method">POST</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">header</param>
+      <param key="auth.apiKey.name">Authorization</param>
+      <param key="auth.apiKey.value">Zoho-oauthtoken ${SITE24X7_TOKEN}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"display_name":"${display_name}","type":"${type}","website":"${website}","send_message":"${send_message}","check_frequency":${check_frequency}}</param>
+    </loader>
+  </pipeline>
+
+  <pipeline name="datadog-ssl">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.${DATADOG_DOMAIN}/api/v1/synthetics/tests</param>
+      <param key="method">GET</param>
+      <param key="headers.DD-API-KEY">${DATADOG_API_KEY}</param>
+      <param key="headers.DD-APPLICATION-KEY">${DATADOG_APP_KEY}</param>
+      <param key="recordsPointer">/tests</param>
+    </extractor>
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.display_name">name</param>
+        <param key="mapping.type">literal:SSL_CERT</param>
+        <param key="mapping.website">config.request.host</param>
+        <param key="mapping.port">config.request.port</param>
+        <param key="mapping.check_frequency">options.tick_every</param>
+        <param key="mapping.status">status</param>
+      </transformer>
+    </transformers>
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.site24x7.com/api/monitors</param>
+      <param key="method">POST</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">header</param>
+      <param key="auth.apiKey.name">Authorization</param>
+      <param key="auth.apiKey.value">Zoho-oauthtoken ${SITE24X7_TOKEN}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"display_name":"${display_name}","type":"${type}","website":"${website}","port":${port},"check_frequency":${check_frequency}}</param>
+    </loader>
+  </pipeline>
+
+  <pipeline name="datadog-dns">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.${DATADOG_DOMAIN}/api/v1/synthetics/tests</param>
+      <param key="method">GET</param>
+      <param key="headers.DD-API-KEY">${DATADOG_API_KEY}</param>
+      <param key="headers.DD-APPLICATION-KEY">${DATADOG_APP_KEY}</param>
+      <param key="recordsPointer">/tests</param>
+    </extractor>
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.display_name">name</param>
+        <param key="mapping.type">literal:DNS</param>
+        <param key="mapping.domain_name">config.request.host</param>
+        <param key="mapping.dns_host">config.request.dnsServer</param>
+        <param key="mapping.check_frequency">options.tick_every</param>
+        <param key="mapping.status">status</param>
+      </transformer>
+    </transformers>
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.site24x7.com/api/monitors</param>
+      <param key="method">POST</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">header</param>
+      <param key="auth.apiKey.name">Authorization</param>
+      <param key="auth.apiKey.value">Zoho-oauthtoken ${SITE24X7_TOKEN}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"display_name":"${display_name}","type":"${type}","domain_name":"${domain_name}","dns_host":"${dns_host}","check_frequency":${check_frequency}}</param>
+    </loader>
+  </pipeline>
+
+  <pipeline name="datadog-port">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.${DATADOG_DOMAIN}/api/v1/synthetics/tests</param>
+      <param key="method">GET</param>
+      <param key="headers.DD-API-KEY">${DATADOG_API_KEY}</param>
+      <param key="headers.DD-APPLICATION-KEY">${DATADOG_APP_KEY}</param>
+      <param key="recordsPointer">/tests</param>
+    </extractor>
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.display_name">name</param>
+        <param key="mapping.type">literal:PORT</param>
+        <param key="mapping.host_name">config.request.host</param>
+        <param key="mapping.port">config.request.port</param>
+        <param key="mapping.check_frequency">options.tick_every</param>
+        <param key="mapping.status">status</param>
+      </transformer>
+    </transformers>
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.site24x7.com/api/monitors</param>
+      <param key="method">POST</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">header</param>
+      <param key="auth.apiKey.name">Authorization</param>
+      <param key="auth.apiKey.value">Zoho-oauthtoken ${SITE24X7_TOKEN}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"display_name":"${display_name}","type":"${type}","host_name":"${host_name}","port":${port},"check_frequency":${check_frequency}}</param>
+    </loader>
+  </pipeline>
+
+  <pipeline name="datadog-ping">
+    <extractor class="com.example.migration.connectors.http.HttpExtractor">
+      <param key="url">https://api.${DATADOG_DOMAIN}/api/v1/synthetics/tests</param>
+      <param key="method">GET</param>
+      <param key="headers.DD-API-KEY">${DATADOG_API_KEY}</param>
+      <param key="headers.DD-APPLICATION-KEY">${DATADOG_APP_KEY}</param>
+      <param key="recordsPointer">/tests</param>
+    </extractor>
+    <transformers>
+      <transformer class="com.example.migration.core.MappingTransformer">
+        <param key="mapping.display_name">name</param>
+        <param key="mapping.type">literal:PING</param>
+        <param key="mapping.host_name">config.request.host</param>
+        <param key="mapping.check_frequency">options.tick_every</param>
+        <param key="mapping.status">status</param>
+      </transformer>
+    </transformers>
+    <loader class="com.example.migration.connectors.http.HttpLoader">
+      <param key="url">https://www.site24x7.com/api/monitors</param>
+      <param key="method">POST</param>
+      <param key="auth.type">apiKey</param>
+      <param key="auth.apiKey.in">header</param>
+      <param key="auth.apiKey.name">Authorization</param>
+      <param key="auth.apiKey.value">Zoho-oauthtoken ${SITE24X7_TOKEN}</param>
+      <param key="headers.Content-Type">application/json</param>
+      <param key="bodyTemplate">{"display_name":"${display_name}","type":"${type}","host_name":"${host_name}","check_frequency":${check_frequency}}</param>
+    </loader>
+  </pipeline>
+</migration>
