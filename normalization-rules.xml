@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    AstraMigrate Enterprise - Normalization Rules Configuration
+    ============================================================
+    Version: 3.0.0
+    Standard XML-based configuration framework
+-->
+<normalization-rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    <!-- ==================== VENDOR DEFINITIONS ==================== -->
+    <vendors>
+        <!-- DATADOG VENDOR -->
+        <vendor id="datadog" name="Datadog" enabled="true">
+            <api-config>
+                <base-url>https://api.{domain}/api/v1</base-url>
+                <monitors-endpoint>/synthetics/tests</monitors-endpoint>
+                <response-root-path>$.tests</response-root-path>
+            </api-config>
+            
+            <credentials>
+                <credential id="DD-API-KEY" label="DD-API-Key" type="secret" required="true">
+                    <description>Datadog API Key for authentication</description>
+                </credential>
+                <credential id="DD-APPLICATION-KEY" label="DD-APPLICATION-Key" type="secret" required="true">
+                    <description>Datadog Application Key for authorization</description>
+                </credential>
+                <credential id="domain" label="Datadog Site" type="text" required="true">
+                    <description>Datadog site domain (e.g. us5.datadoghq.com)</description>
+                    <placeholder>us5.datadoghq.com</placeholder>
+                </credential>
+            </credentials>
+            
+            <type-mappings>
+                <!-- HTTP REST API Monitors -->
+                <type-mapping vendor-type="api" sub-type="http" target-type="REST_API">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.request.url" target="website"/>
+                        <field source="$.config.request.method" target="http_method" transform="normalize-http-method"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.config.request.headers" target="request_headers"/>
+                        <field source="$.config.request.body" target="request_body"/>
+                        <field source="$.status" target="status"/>
+                        <field source="$.tags" target="tags"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- Browser Monitors - Maps to URL type -->
+                <type-mapping vendor-type="browser" sub-type="" target-type="URL">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.request.url" target="website"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.status" target="status"/>
+                        <field source="$.tags" target="tags"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- WebSocket Monitors -->
+                <type-mapping vendor-type="api" sub-type="websocket" target-type="WEBSOCKET">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.request.url" target="website"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.config.request.message" target="send_message"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- SSL/TLS Certificate Monitors -->
+                <type-mapping vendor-type="api" sub-type="ssl" target-type="SSL_CERT">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.request.host" target="website"/>
+                        <field source="$.config.request.port" target="port" default="443"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- DNS Monitors -->
+                <type-mapping vendor-type="api" sub-type="dns" target-type="DNS">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.request.host" target="domain_name"/>
+                        <field source="$.config.request.dnsServer" target="dns_host"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- TCP Port Monitors -->
+                <type-mapping vendor-type="api" sub-type="tcp" target-type="PORT">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.request.host" target="host_name"/>
+                        <field source="$.config.request.port" target="port" default="80"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- ICMP Ping Monitors -->
+                <type-mapping vendor-type="api" sub-type="icmp" target-type="PING">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.request.host" target="host_name"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- gRPC Monitors -->
+                <type-mapping vendor-type="api" sub-type="grpc" target-type="REST_API">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.request.host" target="website"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- Multi-step API Monitors -->
+                <type-mapping vendor-type="api" sub-type="multi" target-type="REST_API">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.config.steps[0].request.url" target="website"/>
+                        <field source="$.config.steps[0].request.method" target="http_method" transform="normalize-http-method"/>
+                        <field source="$.options.tick_every" target="check_frequency" transform="seconds-to-minutes"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+            </type-mappings>
+        </vendor>
+        
+        <!-- NEWRELIC VENDOR -->
+        <vendor id="newrelic" name="NewRelic" enabled="true">
+            <api-config>
+                <base-url>https://{domain}/synthetics</base-url>
+                <monitors-endpoint>/api/v3/monitors</monitors-endpoint>
+                <response-root-path>$.monitors</response-root-path>
+            </api-config>
+            
+            <credentials>
+                <credential id="Api-Key" label="API-Key" type="secret" required="true">
+                    <description>NewRelic API Key</description>
+                </credential>
+                <credential id="domain" label="NewRelic Site" type="text" required="true">
+                    <description>NewRelic site domain</description>
+                    <placeholder>synthetics.newrelic.com</placeholder>
+                </credential>
+            </credentials>
+            
+            <type-mappings>
+                <!-- Simple Browser Monitors -->
+                <type-mapping vendor-type="BROWSER" sub-type="" target-type="URL">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.uri" target="website"/>
+                        <field source="$.frequency" target="check_frequency"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- Simple Ping Monitors -->
+                <type-mapping vendor-type="SIMPLE" sub-type="" target-type="URL">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.uri" target="website"/>
+                        <field source="$.frequency" target="check_frequency"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- Scripted Browser Monitors -->
+                <type-mapping vendor-type="SCRIPT_BROWSER" sub-type="" target-type="URL">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.uri" target="website"/>
+                        <field source="$.frequency" target="check_frequency"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+                
+                <!-- Scripted API Monitors -->
+                <type-mapping vendor-type="SCRIPT_API" sub-type="" target-type="REST_API">
+                    <field-mappings>
+                        <field source="$.name" target="display_name"/>
+                        <field source="$.uri" target="website"/>
+                        <field source="$.frequency" target="check_frequency"/>
+                        <field source="$.status" target="status"/>
+                    </field-mappings>
+                </type-mapping>
+            </type-mappings>
+        </vendor>
+    </vendors>
+    
+    <!-- ==================== UI TABLE CONFIGURATION ==================== -->
+    <ui-config>
+        <table-definitions>
+            <table-def type="REST_API" display-name="REST API Monitors">
+                <columns>
+                    <column field="display_name" label="Monitor Name" editable="true" width="200px"/>
+                    <column field="website" label="URL/Endpoint" editable="true" width="300px"/>
+                    <column field="http_method" label="HTTP Method" editable="true" width="100px"/>
+                    <column field="check_frequency" label="Interval (min)" editable="true" width="100px"/>
+                </columns>
+            </table-def>
+            
+            <table-def type="URL" display-name="URL/Website Monitors">
+                <columns>
+                    <column field="display_name" label="Monitor Name" editable="true" width="200px"/>
+                    <column field="website" label="Website URL" editable="true" width="350px"/>
+                    <column field="check_frequency" label="Interval (min)" editable="true" width="100px"/>
+                </columns>
+            </table-def>
+            
+            <table-def type="WEBSOCKET" display-name="WebSocket Monitors">
+                <columns>
+                    <column field="display_name" label="Monitor Name" editable="true" width="200px"/>
+                    <column field="website" label="WebSocket URL" editable="true" width="350px"/>
+                    <column field="check_frequency" label="Interval (min)" editable="true" width="100px"/>
+                </columns>
+            </table-def>
+            
+            <table-def type="SSL_CERT" display-name="SSL Certificate Monitors">
+                <columns>
+                    <column field="display_name" label="Monitor Name" editable="true" width="200px"/>
+                    <column field="website" label="Host" editable="true" width="250px"/>
+                    <column field="port" label="Port" editable="true" width="80px"/>
+                    <column field="check_frequency" label="Interval (min)" editable="true" width="100px"/>
+                </columns>
+            </table-def>
+            
+            <table-def type="DNS" display-name="DNS Monitors">
+                <columns>
+                    <column field="display_name" label="Monitor Name" editable="true" width="200px"/>
+                    <column field="domain_name" label="Domain" editable="true" width="250px"/>
+                    <column field="dns_host" label="DNS Server" editable="true" width="150px"/>
+                    <column field="check_frequency" label="Interval (min)" editable="true" width="100px"/>
+                </columns>
+            </table-def>
+            
+            <table-def type="PORT" display-name="Port/TCP Monitors">
+                <columns>
+                    <column field="display_name" label="Monitor Name" editable="true" width="200px"/>
+                    <column field="host_name" label="Host" editable="true" width="250px"/>
+                    <column field="port" label="Port" editable="true" width="80px"/>
+                    <column field="check_frequency" label="Interval (min)" editable="true" width="100px"/>
+                </columns>
+            </table-def>
+            
+            <table-def type="PING" display-name="Ping/ICMP Monitors">
+                <columns>
+                    <column field="display_name" label="Monitor Name" editable="true" width="200px"/>
+                    <column field="host_name" label="Host/IP" editable="true" width="250px"/>
+                    <column field="check_frequency" label="Interval (min)" editable="true" width="100px"/>
+                </columns>
+            </table-def>
+        </table-definitions>
+        
+        <!-- Fields that should be hidden in UI -->
+        <hidden-fields>
+            <field>threshold_profile_id</field>
+            <field>user_group_ids</field>
+            <field>location_profile_id</field>
+            <field>notification_profile_id</field>
+            <field>__idx</field>
+            <field>__originalIndex</field>
+        </hidden-fields>
+        
+        <!-- Lookup field definitions for dropdowns -->
+        <lookup-fields>
+            <lookup field="location_profile_id" data-key="locations" label-field="profile_name" value-field="profile_id"/>
+            <lookup field="notification_profile_id" data-key="notifications" label-field="profile_name" value-field="profile_id"/>
+            <lookup field="user_group_ids" data-key="groups" label-field="display_name" value-field="user_group_id"/>
+        </lookup-fields>
+    </ui-config>
+    
+    <!-- ==================== TRANSFORMATION FUNCTIONS ==================== -->
+    <transformations>
+        <transform id="seconds-to-minutes" type="numeric">
+            <description>Converts seconds to minutes with Site24x7 interval mapping</description>
+        </transform>
+        <transform id="normalize-http-method" type="string">
+            <description>Normalizes HTTP methods to Site24x7 format (G, P, U, D)</description>
+        </transform>
+        <transform id="to-uppercase" type="string">
+            <description>Converts string to uppercase</description>
+        </transform>
+        <transform id="to-lowercase" type="string">
+            <description>Converts string to lowercase</description>
+        </transform>
+        <transform id="to-integer" type="numeric">
+            <description>Converts to integer</description>
+        </transform>
+        <transform id="to-boolean" type="boolean">
+            <description>Converts to boolean</description>
+        </transform>
+    </transformations>
+    
+</normalization-rules>
+
